@@ -1,0 +1,47 @@
+
+{{#if message}}
+  <div class="nav">
+    <h2>{{message}}</h2>
+    <div class="bottonsNav">
+      <form method="get" action="/api/login/logout">
+      <button type="submit">Logout</button>
+      </form>
+      <form method="get" action="/api/dbCarts/{{cartId}}">
+      <button type="submit">Mi carrito <span class="numProducts">{{cartQuantity}}</span></button>
+      </form>
+    </div>
+  </div>
+{{/if}}
+
+<h1>Productos</h1>
+<div >
+  {{#if products.length}}
+    <ul class="productsContain">
+    {{#each products}}
+      <li>
+        <h2>{{name}}</h2>
+        <img src="{{img}}">
+        <p>{{description}}</p>
+        <p>Precio: {{price}}</p>
+        <p>Categoria: {{category}}</p>
+        {{#if ../cartId}}
+        <form id="addToCartForm" method="POST" action="/api/dbCarts/{{../cartId}}/{{this._id}}">
+          <input type="hidden" name="product_id" value="{{_id}}">
+          <button id="addToCartButton" type="submit">add to cart</button>
+        </form>
+        {{/if}}
+      </li>
+    {{/each}}
+    </ul>
+  {{else}}
+    <p>No se encontraron productos!</p>
+  {{/if}}
+  <div>
+    {{#if prevLink}}
+    <a href="{{prevLink}}">⬅️</a>
+    {{/if}}
+    {{#if nextLink}}
+    <a href="{{nextLink}}">➡️</a>
+    {{/if}}
+  </div>
+</div>

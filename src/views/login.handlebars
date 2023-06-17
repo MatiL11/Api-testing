@@ -1,0 +1,29 @@
+<div class="loginContain">
+  <h2>Login</h2>
+
+  <form action="" id="loginForm">
+    <label for="">Email</label>
+    <input type="email" name="email" />
+
+    <label for="">Password</label>
+    <input type="password" name="password" />
+
+    <button type="submit">Iniciar sesión</button>
+  </form>
+  <a href="/api/login/github">Ingresar con GitHub</a>
+  <button
+    onclick="window.location.href='/api/register'"
+    class="registerBtn"
+  >Registrarse</button>
+
+</div>
+<script>
+  const form = document.getElementById('loginForm')
+  form.addEventListener('submit', e => { e.preventDefault() const data = new
+  FormData(form) const obj = {} data.forEach((value, key) => (obj[key] = value))
+  const url = '/api/login' const headers = { 'Content-type': 'application/json',
+  } const method = 'POST' const body = JSON.stringify(obj) fetch(url, { headers,
+  method, body, }) .then(response => response.json()) .then(() => {
+  window.location.href = '/api/dbProducts?limit=9'; }) .catch(error =>
+  console.log(error)) })
+</script>
