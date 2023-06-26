@@ -61,7 +61,7 @@ class TicketsRepository {
         unprocessedProducts.push(product);
       }
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 }

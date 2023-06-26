@@ -1,10 +1,10 @@
+const CustomErrorRepository = require("../DAO/repository/error.repository");
+
 function adminAccess(req, res, next) {
   if (req.user.role === "administrador") {
     next();
   } else {
-    res
-      .status(401)
-      .json({ error: "Acceso denegado, no tienes permisos de administrador!" });
+    next(new CustomErrorRepository(401));
   }
 }
 
