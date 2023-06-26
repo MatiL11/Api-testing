@@ -8,30 +8,28 @@ router.post(
   passport.authenticate("register", {
     failureRedirect: "register/failresgister",
   }),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const newUser = req.user;
       res.status(201).json({ status: "success", message: newUser });
     } catch (error) {
       console.log(error.message);
-      res
-        .status(500)
-        .json({ status: "error", error: "Error interno del servidor" });
+      next(error);
     }
   }
 );
 
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
   try {
     res.render("register.handlebars");
   } catch (error) {
-    res.status(400).json({ error: error });
+    next(error);
   }
 });
 
-router.get("/failregister", (req, res) => {
-  console.log("Falló estrategia de registro!");
+router.get("/failregister", (req, res, next) => {
+  console.log("falló estrategia de registro!");
 
-  res.json({ error: "Registro fallido" });
+  next(error);
 });
 module.exports = router;
