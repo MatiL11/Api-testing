@@ -10,6 +10,7 @@ const app = express();
 const mongoConnect = require("../db");
 const router = require("./routers");
 const initializePassport = require("./config/passport.config");
+const logger = require("./config/logs/logger.config");
 
 const { dbAdmin, dbPassword, dbName, dbHost } = require("./config/db.config");
 const { port } = require("./config/app.config");
@@ -23,6 +24,11 @@ app.use(express.static(__dirname + "/public"));
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
+
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`);
+  next();
+});
 
 app.use(
   session({

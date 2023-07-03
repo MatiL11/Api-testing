@@ -5,11 +5,19 @@ const {
   admin_email,
   admin_password,
 } = require("../../config/adminUser.config");
+const ErrorRepository = require("./errors.repository");
 
 class UserRepository {
   async createUser(userInfo) {
     try {
       const { first_name, last_name, email, age, password } = userInfo;
+
+      if (!userInfo) {
+        throw new ErrorRepository(
+          "Datos incorrectos, verifica que los campos no esten vacios!",
+          400
+        );
+      }
 
       let role = "usuario";
 
@@ -34,9 +42,12 @@ class UserRepository {
       };
 
       const user = await Users.create(newUserInfo);
+
+      logger.info("Usuario creado con exito", user);
       return user;
     } catch (error) {
-      throw error;
+      logger.error("Error al crear el usuario, verifica tus datos.", error);
+      throw new ErrorRepository("Error al crear el usuario", 500);
     }
   }
 }

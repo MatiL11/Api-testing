@@ -1,9 +1,11 @@
-const productsController = require("../DAO/Controllers/controller.products");
-const cartController = require("../DAO/Controllers/controller.carts");
-const userController = require("../DAO/Controllers/controller.users");
-const authController = require("../DAO/Controllers/controller.auth");
-const currentSession = require("../DAO/Controllers/controller.sessions");
-const messagesController = require("../DAO/Controllers/controller.messages");
+const productsController = require("../dao/dbController/controller.products");
+const cartController = require("../dao/dbController/controller.carts");
+const userController = require("../dao/dbController/controller.users");
+const authController = require("../dao/dbController/controller.auth");
+const currentSession = require("../dao/dbController/controller.sessions");
+const messagesController = require("../dao/dbController/controller.messages");
+const loggerTest = require("../dao/dbController/constroller.logger");
+const ErrorRepository = require("../dao/repository/errors.repository");
 
 const errorHandler = (err, req, res, next) => {
   if (err instanceof ErrorRepository) {
@@ -11,7 +13,7 @@ const errorHandler = (err, req, res, next) => {
     res.status(err.code).json({ error: errorMessage });
   } else {
     console.error(err);
-    res.status(500).json({ error: "Error en el servidor." });
+    res.status(500).json({ error: "Ocurrió un error en el servidor." });
   }
 };
 
@@ -22,6 +24,9 @@ const router = (app) => {
   app.use("/api/dbCarts", cartController);
   app.use("/api/sessions/current", currentSession);
   app.use("/api/messages", messagesController);
+  app.use("/api/loggerTest", loggerTest);
+
+  app.use(errorHandler);
 };
 
 module.exports = router;

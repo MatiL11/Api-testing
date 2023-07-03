@@ -1,48 +1,55 @@
 const Tickets = require("../../models/Tickets.model");
 const Products = require("../../models/Products.model");
+const ErrorRepository = require("./errors.repository");
 
 class TicketsRepository {
   async processDataTicket(code, userEmail, cart) {
-    const processedProducts = [];
-    const unprocessedProducts = [];
-    let totalAmount = 0;
+    try {
+      const processedProducts = [];
+      const unprocessedProducts = [];
+      let totalAmount = 0;
 
-    for (let i = 0; i < cart.productos.length; i++) {
-      const item = cart.productos[i];
+      for (let i = 0; i < cart.productos.length; i++) {
+        const item = cart.productos[i];
 
-      const product = await this.processItem(
-        item,
-        processedProducts,
-        unprocessedProducts
-      );
-      if (product) {
-        const productQuantity = item.quantity;
-        const productTotalPrice = product.price * productQuantity;
-        totalAmount += productTotalPrice;
+        const product = await this.processItem(
+          item,
+          processedProducts,
+          unprocessedProducts
+        );
+        if (product) {
+          const productQuantity = item.quantity;
+          const productTotalPrice = product.price * productQuantity;
+          totalAmount += productTotalPrice;
+        } else {
+          throw new ErrorRepository("Productos no encontrados", 404);
+        }
       }
+
+      cart.productos = cart.productos.filter(
+        (item) =>
+          !processedProducts.some(
+            (processedItem) =>
+              processedItem._id.toString() === item.product._id.toString()
+          )
+      );
+      await cart.save();
+
+      const ticket = await Tickets.create({
+        code: code,
+        purchase_datetime: Date.now(),
+        amount: totalAmount,
+        purchaser: userEmail,
+        processProducts: processedProducts,
+      });
+
+      return {
+        ticket: ticket,
+        unprocessedProducts: unprocessedProducts,
+      };
+    } catch (error) {
+      throw new ErrorRepository("error al procesar tu compra", 400);
     }
-
-    cart.productos = cart.productos.filter(
-      (item) =>
-        !processedProducts.some(
-          (processedItem) =>
-            processedItem._id.toString() === item.product._id.toString()
-        )
-    );
-    await cart.save();
-
-    const ticket = await Tickets.create({
-      code: code,
-      purchase_datetime: Date.now(),
-      amount: totalAmount,
-      purchaser: userEmail,
-      processProducts: processedProducts,
-    });
-
-    return {
-      ticket: ticket,
-      unprocessedProducts: unprocessedProducts,
-    };
   }
 
   async processItem(item, processedProducts, unprocessedProducts) {
@@ -61,7 +68,7 @@ class TicketsRepository {
         unprocessedProducts.push(product);
       }
     } catch (error) {
-      throw error;
+      throw new ErrorRepository("Error al procesar los productos", 400);
     }
   }
 }

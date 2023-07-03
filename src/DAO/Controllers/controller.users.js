@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const passport = require("passport");
+const logger = require("../../config/logs/logger.config");
 
 const router = Router();
 
@@ -11,9 +12,11 @@ router.post(
   async (req, res, next) => {
     try {
       const newUser = req.user;
+
+      logger.info("Se registro un nuevo usuario", newUser);
       res.status(201).json({ status: "success", message: newUser });
     } catch (error) {
-      console.log(error.message);
+      logger.error("Error al crer usuario", error);
       next(error);
     }
   }
@@ -28,7 +31,7 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/failregister", (req, res, next) => {
-  console.log("falló estrategia de registro!");
+  logger.error("Fallo en la estrategia de registro", error);
 
   next(error);
 });

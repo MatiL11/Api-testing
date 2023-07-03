@@ -7,6 +7,7 @@ const saveProductInCar = require("../carts.dao");
 const checkDataTicket = require("../tickets.dao");
 const uuid = require("uuid");
 const ErrorRepository = require("../repository/errors.repository");
+const logger = require("../../config/logs/logger.config");
 const router = Router();
 
 router.post("/", userAcces, async (req, res, next) => {
@@ -19,27 +20,30 @@ router.post("/", userAcces, async (req, res, next) => {
     next(error);
   }
 });
-router.get("/:cid", async (req, res, next) => {
+
+router.get("/:cid", userAcces, async (req, res, next) => {
   try {
     const cart = await Cart.findById(req.params.cid).populate(
       "productos.product"
     );
     res.status(200).render("carts.handlebars", { cart });
   } catch (error) {
-    console.log(error);
+    logger.error("Error al cargar el carrito", error);
     next(new ErrorRepository("Error al mostrar el carrito", 400));
   }
 });
 
-router.post("/:cartId/:productId", async (req, res, next) => {
+router.post("/:cartId/:productId", userAcces, async (req, res, next) => {
   try {
     const cart = await Cart.findOne({ _id: req.params.cartId });
     const product = await Products.findOne({ _id: req.params.productId });
 
     await saveProductInCar(cart, product);
+
+    logger.info("Producto agregado con exito!");
     res.status(200).redirect(req.header("Referer"));
   } catch (error) {
-    console.log(error);
+    logger.error("Error al agregar el producto", error);
     next(error);
   }
 });
