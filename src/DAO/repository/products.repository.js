@@ -1,6 +1,6 @@
 const Products = require("../../models/Products.model");
 const Cart = require("../../models/Carts.model");
-const ErrorRepository = require("./errors.repository");
+const ErrorRepository = require("./error.repository");
 const uuid = require("uuid");
 
 class ProductsRepository {

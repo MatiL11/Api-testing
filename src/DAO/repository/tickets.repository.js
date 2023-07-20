@@ -1,6 +1,6 @@
 const Tickets = require("../../models/Tickets.model");
 const Products = require("../../models/Products.model");
-const ErrorRepository = require("./errors.repository");
+const ErrorRepository = require("./error.repository");
 
 class TicketsRepository {
   async processDataTicket(code, userEmail, cart) {

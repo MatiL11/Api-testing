@@ -1,5 +1,5 @@
 const logger = require("../../config/logs/logger.config");
-const ErrorRepository = require("./errors.repository");
+const ErrorRepository = require("./error.repository");
 
 class CartsRepository {
   async saveProduct(cart, product) {

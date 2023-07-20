@@ -5,7 +5,9 @@ const {
   admin_email,
   admin_password,
 } = require("../../config/adminUser.config");
-const ErrorRepository = require("./errors.repository");
+const ErrorRepository = require("error.repository");
+const logger = require("../../config/logs/logger.config");
+const nodemailer = require("nodemailer");
 
 class UserRepository {
   async createUser(userInfo) {
@@ -20,7 +22,6 @@ class UserRepository {
       }
 
       let role = "usuario";
-
       const passwordMatch = bcrypt.compare(password, admin_password);
 
       if (email === admin_email && passwordMatch) {
@@ -40,7 +41,6 @@ class UserRepository {
         role,
         cartId,
       };
-
       const user = await Users.create(newUserInfo);
 
       logger.info("Usuario creado con exito", user);
@@ -48,6 +48,25 @@ class UserRepository {
     } catch (error) {
       logger.error("Error al crear el usuario, verifica tus datos.", error);
       throw new ErrorRepository("Error al crear el usuario", 500);
+    }
+  }
+
+  async changeUserRole(user) {
+    try {
+      const usuario = await Users.findOne({ _id: user._id });
+
+      if (usuario.role === "usuario") {
+        usuario.role = "premium";
+      } else {
+        usuario.role = "usuario";
+      }
+
+      await usuario.updateOne({ role: usuario.role });
+
+      return usuario;
+    } catch (error) {
+      logger.error("Error al cambiar el role del usuario", error);
+      throw new ErrorRepository("Error al cambiar el rol", 500);
     }
   }
 }

@@ -4,6 +4,8 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const handlebars = require("express-handlebars");
+const swaggerUiExpress = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
 
 const app = express();
 
@@ -15,6 +17,24 @@ const logger = require("./config/logs/logger.config");
 const { dbAdmin, dbPassword, dbName, dbHost } = require("./config/db.config");
 const { port } = require("./config/app.config");
 const { secret } = require("./config/session.config");
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "Documentacion to project Ecommerce",
+      description: "Endpoints to Manager Products and carts.",
+    },
+  },
+  apis: [`${__dirname.replace(/\\/g, "/")}/docs/**/*.yaml`],
+};
+
+const swaggerSpecs = swaggerJSDoc(swaggerOptions);
+app.use(
+  "/api-docs",
+  swaggerUiExpress.serve,
+  swaggerUiExpress.setup(swaggerSpecs)
+);
 
 app.use(cookieParser());
 app.use(express.json());

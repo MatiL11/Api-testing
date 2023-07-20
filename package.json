@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,10 +23,13 @@
     "mongoose-paginate-v2": "^1.7.1",
     "multer": "^1.4.5-lts.1",
     "node": "^20.2.0",
+    "nodemailer": "^6.9.4",
     "passport": "^0.6.0",
     "passport-github2": "^0.1.12",
     "passport-local": "^1.0.0",
     "socket.io": "^4.6.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "sweetalert2": "^11.7.12",
     "uuid": "^9.0.0",
     "winston": "^3.9.0"

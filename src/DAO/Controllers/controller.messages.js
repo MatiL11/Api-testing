@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const Message = require("../../models/Messages.model");
-const userAcces = require("../../middlewares/userAcces.middleware");
+const userAcces = require("../../middlewares/userAccess.middleware");
 
 router.get("/", userAcces, async (req, res, next) => {
   try {

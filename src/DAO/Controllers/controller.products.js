@@ -4,8 +4,8 @@ const Cart = require("../../models/Carts.model");
 const router = Router();
 const privateAccess = require("../../middlewares/privateAccess.middleware");
 const productSearch = require("../products.dao");
-const adminAccess = require("../../middlewares/adminAcces.middleware");
-const userAcces = require("../../middlewares/userAcces.middleware");
+const adminAccess = require("../../middlewares/adminAccess.middleware.js");
+const userAcces = require("../../middlewares/userAccess.middleware.js");
 const ProductsRepository = require("../repository/products.repository");
 
 router.get("/", privateAccess, async (req, res, next) => {

@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const UserDTO = require("../dto/users.dto");
-const ErrorRepository = require("../repository/errors.repository");
+const ErrorRepository = require("../repository/error.repository");
 
 router.get("/", (req, res, next) => {
   try {
