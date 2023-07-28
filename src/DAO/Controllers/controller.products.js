@@ -7,6 +7,8 @@ const productSearch = require("../products.dao");
 const adminAccess = require("../../middlewares/adminAccess.middleware.js");
 const userAcces = require("../../middlewares/userAccess.middleware.js");
 const ProductsRepository = require("../repository/products.repository");
+const logger = require("../../config/logs/logger.config");
+const ErrorRepository = require("../repository/errors.repository");
 
 router.get("/", privateAccess, async (req, res, next) => {
   try {
@@ -17,8 +19,12 @@ router.get("/", privateAccess, async (req, res, next) => {
     const cart = await Cart.findOne({ _id: user.cartId });
     const cartId = cart._id.toString();
     const products = await productSearch(req, message, cartId);
-    res.render("products.handlebars", products);
+
+    logger.info("Productos cargados con exito", products);
+
+    res.status(200).render("products.handlebars", products);
   } catch (error) {
+    logger.error("Error al cargar los productos", error);
     next(error);
   }
 });
@@ -29,15 +35,31 @@ router.get("/mockingProducts", userAcces, async (req, res, next) => {
     const mockProducts = await productsRepository.generateMockProducts();
     res.json({ Productos: mockProducts });
   } catch (error) {
+    logger.error("Error al generar los productos", error);
     next(error);
   }
 });
 
 router.post("/", adminAccess, async (req, res, next) => {
   try {
+    if (
+      req.session.user.role !== "premium" &&
+      req.session.user.role !== "administrador"
+    ) {
+      throw new ErrorRepository("Rol de usuario rechazado", 401);
+    }
+
+    if (req.body.owner === null) {
+      req.body.owner === "administrador";
+    }
+
+    req.body.owner = req.session.user.email;
+
     const newProduct = await Products.create(req.body);
-    res.json({ message: newProduct });
+    logger.info("Se agrego un producto a la db", newProduct);
+    res.status(200).json({ message: newProduct });
   } catch (error) {
+    logger.error("Error al agregar producto", error);
     next(error);
   }
 });
@@ -49,12 +71,15 @@ router.put("/:productId", adminAccess, async (req, res, next) => {
       req.body,
       { new: true }
     );
-    res.json({
-      message: "Product updated successfully",
-      product: updatedProduct,
-    });
+    logger.info("Producto actualizado con exito", updatedProduct);
+    res
+      .status(200)
+      .json({
+        message: "Product updated successfully",
+        product: updatedProduct,
+      });
   } catch (error) {
-    console.log(error);
+    logger.error("Error al actualizar el producto");
     next(error);
   }
 });
@@ -62,11 +87,12 @@ router.put("/:productId", adminAccess, async (req, res, next) => {
 router.delete("/:productId", adminAccess, async (req, res, next) => {
   try {
     await Products.findByIdAndDelete(req.params.productId);
+    logger.info("Producto eliminado", req.params.productId);
     res.json({
       message: `Product with ID ${req.params.productId} has been deleted`,
     });
   } catch (error) {
-    console.log(error);
+    logger.error("Error al eliminar el producto", error);
     next(error);
   }
 });

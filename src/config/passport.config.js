@@ -49,12 +49,11 @@ const initializePassport = () => {
         try {
           const user = await Users.findOne({ email: username });
           if (!user) return done(null, false);
-          if (!isValidPassword(password, user)) {
-            return done(null, false);
-          }
+          if (!isValidPassword(password, user)) return done(null, false);
+
           done(null, user);
         } catch (error) {
-          done(error);
+          return done(error);
         }
       }
     )
@@ -64,8 +63,8 @@ const initializePassport = () => {
     "github",
     new GithubStrategy(
       {
-        clientID: "Iv1.8227e25ee1e3c345",
-        clientSecret: "62d267c1234b2ef82000c1c4c216fda330e7cedb",
+        clientID: "Iv1.fd7a412bc2d3d8ea",
+        clientSecret: "a4bf21404e0482847624a410a84d97b34715416f",
         callbackURL: "http://localhost:8080/api/login/githubcallback",
       },
       async (accessToken, refreshToken, profile, done) => {

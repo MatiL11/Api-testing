@@ -30,6 +30,7 @@ const swaggerOptions = {
 };
 
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
+
 app.use(
   "/api-docs",
   swaggerUiExpress.serve,

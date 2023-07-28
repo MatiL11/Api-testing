@@ -91,6 +91,7 @@ router.post(
       logger.info("Se inicio una sesion con exito", req.session.user);
       res.status(200).json({ status: "succes", message: "sesion establecida" });
     } catch (error) {
+      console.log(error);
       logger.error("Error al iniciar sesion", error);
       next(error);
     }

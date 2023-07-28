@@ -30,26 +30,20 @@ router.get("/:cid", userAcces, async (req, res, next) => {
     logger.info("Se mostro el carrito: ", { cartId: req.params.cid });
   } catch (error) {
     logger.error("Error al cargar el carrito", error);
+    console.log(error);
     next(new ErrorRepository("Error al mostrar el carrito", 400));
   }
 });
 
-router.post("/:cartId/:productId", userAcces, async (req, res, next) => {
+router.post("/:cartId/:productId", async (req, res, next) => {
   try {
     const cart = await Cart.findOne({ _id: req.params.cartId });
     const product = await Products.findOne({ _id: req.params.productId });
-    const user = req.session.user;
-    if (user.role === "premium" && product.owner !== "premium") {
-      return new ErrorRepository(
-        "No tienes permiso para agregar este producto",
-        401
-      );
-    }
 
     await saveProductInCar(cart, product);
 
     logger.info("Producto agregado con exito!");
-    res.status(200).redirect(req.header("Referer"));
+    res.status(200).json("se agrego el producto con exito");
   } catch (error) {
     logger.error("Error al agregar el producto", error);
     next(error);
@@ -60,8 +54,10 @@ router.put("/:cid", userAcces, async (req, res, next) => {
   try {
     const cart = await Cart.findById(req.params.cid);
     cart.productos = req.body.productos;
+
     await cart.save();
-    res.json({ message: "Cart updated", cart });
+
+    res.status(200).json({ message: "Cart updated", cart });
     logger.info("Carrito actualizado con exito!", cart);
   } catch (error) {
     logger.error("Error al actualizar el carrito", error);
@@ -76,7 +72,7 @@ router.put("/:cid/products/:pid", userAcces, async (req, res, next) => {
     if (!item) throw new Error("Product not found in cart");
     item.quantity = req.body.quantity;
     await cart.save();
-    res.json({ message: "Cart updated", cart });
+    res.status(200).json({ message: "Cart updated", cart });
     logger.info("Cantidad de producto actualizada.", cart);
   } catch (error) {
     logger.error("Error al actualizar la propiedad del producto.", error);
@@ -94,20 +90,20 @@ router.post("/:cid/products/:pid", userAcces, async (req, res, next) => {
     cart.productos.splice(productIndex, 1);
     await cart.save();
     logger.info("Producto eliminado con exito.", cart);
-    res.redirect(`/api/dbCarts/${req.params.cid}`);
+    res.status(200).json("Se elimino el producto con exito");
   } catch (error) {
     logger.error("Error al eliminar el producto.", error);
     next(error);
   }
 });
 
-router.delete("/:cid", async (req, res, next) => {
+router.delete("/:cid", userAcces, async (req, res, next) => {
   try {
     const cart = await Cart.findById(req.params.cid);
     cart.productos = [];
     await cart.save();
     logger.info("Productos eliminados con exito.", cart);
-    res.json({ message: "All products removed from cart", cart });
+    res.status(200).json({ message: "All products removed from cart", cart });
   } catch (error) {
     logger.error("Error al eliminar todos los productos del carrito.", error);
     next(error);
