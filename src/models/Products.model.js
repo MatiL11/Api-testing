@@ -12,6 +12,11 @@ const collectionSchema = new mongoose.Schema({
   category: String,
   status: Boolean,
   img: String,
+  owner: {
+    type: String,
+    default: "administrador",
+    trim: true,
+  },
 });
 
 collectionSchema.plugin(mongoosePaginate);

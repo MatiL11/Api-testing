@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const collectionName = "sessions";
+const collectionName = "users";
 
 const collectionSchema = new mongoose.Schema({
   first_name: String,
@@ -17,9 +17,16 @@ const collectionSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["administrador", "usuario"],
+    enum: ["administrador", "usuario", "premium"],
     default: "usuario",
   },
+  document: [
+    {
+      name: String,
+      reference: String,
+    },
+  ],
+  last_conection: Date,
 });
 
 const Users = mongoose.model(collectionName, collectionSchema);

@@ -2,7 +2,7 @@ const { Router } = require("express");
 const passport = require("passport");
 const logger = require("../../config/logs/logger.config");
 const Users = require("../../models/Users.model");
-const ErrorRepository = require("../repository/errors.repository");
+const ErrorRepository = require("../repository/error.repository");
 const ResetPasswordRepository = require("../repository/resetPassword.repository");
 
 const router = Router();
@@ -79,15 +79,14 @@ router.post(
         throw new ErrorRepository("Usuario o contraseña incorrectos", 404);
       }
 
-      req.session.user = {
-        _id: req.user._id,
-        first_name: req.user.first_name,
-        last_name: req.user.last_name,
-        email: req.user.email,
-        role: req.user.role,
-        cartId: req.user.cartId,
-      };
+      req.session.user = req.user;
 
+      const now = new Date();
+      await Users.findByIdAndUpdate(req.session.user._id, {
+        last_conection: now,
+      });
+
+      req.session.save();
       logger.info("Se inicio una sesion con exito", req.session.user);
       res.status(200).json({ status: "succes", message: "sesion establecida" });
     } catch (error) {
@@ -98,7 +97,10 @@ router.post(
   }
 );
 
-router.get("/logout", (req, res, next) => {
+router.get("/logout", async (req, res, next) => {
+  const now = new Date();
+  await Users.findByIdAndUpdate(req.user._id, { last_conection: now });
+
   req.session.destroy((error) => {
     if (error) {
       logger.error("Error al cerrar la sesion", error);
@@ -118,7 +120,11 @@ router.get(
   "/githubcallback",
   passport.authenticate("github", { failureRedirect: "login/faillogin" }),
   async (req, res) => {
+    const now = new Date();
+    await Users.findByIdAndUpdate(req.user._id, { last_conection: now });
+
     req.session.user = req.user;
+    req.session.save();
     res.redirect("/api/dbProducts?limit=9");
   }
 );
@@ -130,5 +136,4 @@ router.get("/faillogin", (req, res, next) => {
     500
   );
 });
-
 module.exports = router;

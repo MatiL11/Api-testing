@@ -26,7 +26,7 @@ describe("test de productos", () => {
     }
   });
 
-  it("El endpoint GET /api/dbProducts debe de mostrar todos los productos con o sin filtros", async () => {
+  it("El endpoint GET /api/dbProducts debe mostrar todos los productos con o sin filtros", async () => {
     const getProducts = await requester
       .get("/api/dbProducts")
       .set("Cookie", cookies);
@@ -34,14 +34,14 @@ describe("test de productos", () => {
     expect(getProducts.status).to.equal(200);
   });
 
-  it("El endpoint POST /api/dbProducts agrega un nuevo producto a la base de datos", async () => {
+  it("El endpoint POST /api/dbProducts agrega un producto nuevo a la base de datos", async () => {
     const randomProduct = {
       name: "producto de prueba",
       description: "descripcion del producto de prueba",
       price: 1124,
       stock: 100,
       category: "dispositivos",
-      code: "12ewh1-1232-d123df",
+      code: "122zh5-1552-d143hf",
       status: true,
       img: "https://imagenRandom.com",
       owner: "administrador",
@@ -62,9 +62,9 @@ describe("test de productos", () => {
       price: 500,
       stock: 50,
       category: "actualizables",
-      code: "abcd-1234",
+      code: "jhwa-1234",
       status: true,
-      img: "https://image.com",
+      img: "https://imagenRandom.com",
       owner: "administrador",
     };
 
@@ -83,7 +83,7 @@ describe("test de productos", () => {
       category: "actualizables",
       code: "abcd-1234",
       status: false,
-      img: "https://image.com/productoactualizado.jpeg",
+      img: "https://imagenActualizada.com/productoactualizado.jpeg",
       owner: "administrador",
     };
 
@@ -104,7 +104,7 @@ describe("test de productos", () => {
       category: "eliminables",
       code: "abcd-5678",
       status: true,
-      img: "https://image.com",
+      img: "https://imagenRandom.com",
       owner: "administrador",
     };
 
@@ -123,7 +123,7 @@ describe("test de productos", () => {
   });
 });
 
-describe("test de carrito", () => {
+describe("test carrito", () => {
   it("El endpoint GET /api/dbCarts/:cid  obtiene un carrito en especifico", async () => {
     const getCart = await requester
       .get(`/api/dbCarts/${cartId}`)

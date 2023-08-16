@@ -1,22 +1,14 @@
 const logger = require("../../config/logs/logger.config");
-const nodemailer = require("nodemailer");
-const ErrorRepository = require("./errors.repository");
+const ErrorRepository = require("./error.repository");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Users = require("../../models/Users.model");
 const { secret_key } = require("../../config/app.config");
+const mailerDao = require("../mailer.dao");
 
 class ResetPasswordRepository {
   async sendPasswordResetEmail(email) {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "diegoedvflores03@gmail.com",
-        pass: "lipcjmltkzpzljny",
-      },
-    });
-
-    const resetLink = `http://localhost:3000/api/login/forgot-password/${email}`;
+    const resetLink = `http://localhost:8080/api/login/forgot-password/${email}`;
 
     const mailOptions = {
       from: "diegoedvflores03@gmail.com",
@@ -25,13 +17,7 @@ class ResetPasswordRepository {
       text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: ${resetLink}`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error al enviar el correo electrónico:", error);
-      } else {
-        console.log("Correo electrónico enviado:", info.response);
-      }
-    });
+    await mailerDao.sendMail(mailOptions);
   }
 
   async createToken(email, res) {
@@ -57,18 +43,14 @@ class ResetPasswordRepository {
         );
       }
       const user = await Users.findOne({ email: email });
-
       const passwordMatch = bcrypt.compareSync(newPassword, user.password);
 
       if (passwordMatch) {
         alert("La contraseña debe ser diferente a la anterior");
-        return res
-          .status(401)
-          .json({
-            error: "La nueva contraseña debe ser diferente a la anterior",
-          });
+        return res.status(401).json({
+          error: "La nueva contraseña debe ser diferente a la anterior",
+        });
       }
-
       const hashedPass = await bcrypt.hash(newPassword, 10);
 
       user.password = hashedPass;

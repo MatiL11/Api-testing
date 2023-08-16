@@ -18,6 +18,7 @@ const { dbAdmin, dbPassword, dbName, dbHost } = require("./config/db.config");
 const { port } = require("./config/app.config");
 const { secret } = require("./config/session.config");
 
+//swagger
 const swaggerOptions = {
   definition: {
     openapi: "3.0.1",
@@ -46,11 +47,13 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
+//logger de errores
 app.use((req, res, next) => {
   logger.info(`${req.method} ${req.url}`);
   next();
 });
 
+//session middleware
 app.use(
   session({
     store: MongoStore.create({

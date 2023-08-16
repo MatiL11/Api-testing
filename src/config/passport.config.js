@@ -4,7 +4,7 @@ const Users = require("../models/Users.model");
 const GithubStrategy = require("passport-github2");
 const { hashPassword } = require("../utils/cryptPassword.utils");
 const { isValidPassword } = require("../utils/cryptPassword.utils");
-const usersCreate = require("../dao/users.dao");
+const userDao = require("../dao/users.dao");
 
 const LocalStrategy = local.Strategy;
 
@@ -31,7 +31,7 @@ const initializePassport = () => {
             password: hashedPassword,
           };
 
-          const newUser = await usersCreate(userInfo);
+          const newUser = await userDao.createUser(userInfo);
 
           done(null, newUser);
         } catch (error) {
@@ -63,9 +63,9 @@ const initializePassport = () => {
     "github",
     new GithubStrategy(
       {
-        clientID: "Iv1.fd7a412bc2d3d8ea",
-        clientSecret: "a4bf21404e0482847624a410a84d97b34715416f",
-        callbackURL: "http://localhost:8080/api/login/githubcallback",
+        clientID: "Iv1.8227e25ee1e3c345",
+        clientSecret: "812cf26900e3026b232c197372111bc910506851",
+        callbackURL: "http://localhost:3000/api/login/githubcallback",
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -78,7 +78,7 @@ const initializePassport = () => {
               email: profile._json.email,
               password: "",
             };
-            const newUser = await usersCreate(userInfo);
+            const newUser = await userDao.createUser(userInfo);
             return done(null, newUser);
           }
           done(null, user);
